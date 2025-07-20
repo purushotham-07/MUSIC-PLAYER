@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Vocals – Music Player</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: "Segoe UI", Arial, sans-serif;
+      background: linear-gradient(145deg, #e2e8f0, #ffffff);
+      color: #333;
+      padding: 20px;
+    }
+    .header {
+      text-align: center;
+      font-size: 2rem;
+      font-weight: 700;
+      margin-bottom: 20px;
+      padding: 15px 25px;
+      color: #fff;
+      border-radius: 12px;
+      background: linear-gradient(90deg, #007bff, #00c6ff);
+      box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+    }
+    .language-selection {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+    .language-selection button {
+      padding: 10px 18px;
+      font-size: 1rem;
+      border: none;
+      border-radius: 8px;
+      background: #17a2b8;
+      color: #fff;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+    .language-selection button:hover { background: #117a8b; }
+    .container {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      align-items: flex-start;
+      gap: 20px;
+    }
+    .player-container, .queue-container {
+      background: #fff;
+      border-radius: 15px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+      flex: 1 1 280px;
+      max-width: 600px;
+      padding: 20px;
+    }
+    .song-image {
+      width: 100%;
+      max-height: 240px;
+      object-fit: cover;
+      border-radius: 15px;
+      box-shadow: 0 3px 12px rgba(0,0,0,0.2);
+    }
+    .song-title { font-size: 1.5rem; margin-top: 15px; font-weight: 600; }
+    .song-movie { color: #555; margin-top: 4px; }
+    .progress-container {
+      display: flex; align-items: center; gap: 10px; margin-top: 15px;
+    }
+    .progress-bar {
+      flex: 1; height: 6px; background: #ccc; border-radius: 4px;
+      position: relative; cursor: pointer;
+    }
+    .progress {
+      height: 100%; width: 0%; background: #007bff;
+      border-radius: 4px; position: absolute; left: 0; top: 0;
+    }
+    .controls {
+      display: flex; justify-content: center; gap: 15px; margin-top: 20px;
+    }
+    .controls button {
+      width: 50px; height: 50px; font-size: 1.2rem;
+      border: none; border-radius: 50%;
+      background: #6c757d; color: #fff; cursor: pointer;
+      transition: transform 0.2s;
+    }
+    .controls button:hover { transform: scale(1.1); }
+    .play-pause-btn {
+      width: 60px; height: 60px; font-size: 1.5rem; background: #28a745;
+    }
+    .volume-container {
+      display: flex; justify-content: center; align-items: center; gap: 10px; margin-top: 10px;
+    }
+    .volume-slider { width: 100px; }
+    .queue-container { max-height: 350px; overflow-y: auto; }
+    .queue-container h3 {
+      text-align: center; font-size: 1.2rem; margin-bottom: 12px; color: #007bff;
+    }
+    .queue-container ul { list-style: none; }
+    .queue-container li {
+      padding: 10px 12px; margin-bottom: 8px;
+      background: #f8f9fa; border-radius: 8px; cursor: pointer;
+      transition: all 0.3s;
+    }
+    .queue-container li:hover { background: #007bff; color: #fff; }
+    .queue-container li.playing {
+      background: linear-gradient(135deg, #4c669f, #3b5998); color: #fff;
+      font-weight: 600; border-left: 5px solid gold;
+    }
+    .queue-container::-webkit-scrollbar { width: 6px; }
+    .queue-container::-webkit-scrollbar-thumb { background: #007bff; border-radius: 10px; }
+    .queue-container::-webkit-scrollbar-track { background: #f1f1f1; }
+    @media (max-width: 768px) {
+      .header { font-size: 1.7rem; padding: 12px; }
+      .language-selection button { font-size: .9rem; padding: 8px 14px; }
+      .controls button, .play-pause-btn { width: 45px; height: 45px; font-size: 1rem; }
+      .play-pause-btn { width: 55px; height: 55px; }
+    }
+    @media (max-width: 480px) {
+      .volume-slider { width: 80px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="header">Feel Vocals 🎵</div>
+  <div class="language-selection">
+    <button onclick="filterSongs('Telugu')">Telugu</button>
+    <button onclick="filterSongs('Tamil')">Tamil</button>
+    <button onclick="filterSongs('Hindi')">Hindi</button>
+  </div>
+  <div class="container">
+    <div class="player-container">
+      <img id="song-image" src="" alt="Song Cover" class="song-image" />
+      <h2 id="song-title" class="song-title"></h2>
+      <p id="song-movie" class="song-movie"></p>
+      <audio id="audioPlayer" onended="nextSong()">
+        <source id="song-source" src="" type="audio/mpeg" />
+      </audio>
+      <div class="progress-container" onclick="setProgress(event)">
+        <span id="current-time">0:00</span>
+        <div class="progress-bar"><div id="progress" class="progress"></div></div>
+        <span id="total-time">0:00</span>
+      </div>
+      <div class="controls">
+        <button onclick="prevSong()">⏮</button>
+        <button class="play-pause-btn" onclick="togglePlayPause()">▶</button>
+        <button onclick="nextSong()">⏭</button>
+      </div>
+      <div class="volume-container">
+        🔉
+        <input type="range" class="volume-slider" min="0" max="1" step="0.1" onchange="setVolume(this.value)" />
+      </div>
+    </div>
+    <div class="queue-container">
+      <h3>IN QUEUE</h3>
+      <ul id="song-queue"></ul>
+    </div>
+  </div>
+  <script>
+    let songs = [];
+let currentSongIndex = -1;
+let isPlaying = false;
+
+function filterSongs(language) {
+  fetch(`/get_songs?language=${language}`)
+    .then(r => r.json())
+    .then(data => {
+      if (!data.length) return alert("No songs found for this language!");
+      songs = data;
+      renderQueue();
+    })
+    .catch(err => console.error("Error fetching songs:", err));
+}
+
+function loadSong(index) {
+  if (!songs.length) return;
+  currentSongIndex = (index + songs.length) % songs.length;
+  const song = songs[currentSongIndex];
+  document.getElementById("song-image").src = song.image_url;
+  document.getElementById("song-title").textContent = `${song.song_name} - ${song.singer}`;
+  document.getElementById("song-movie").textContent = song.movie || "";
+  document.getElementById("song-source").src = song.song_url;
+  document.getElementById("audioPlayer").load();
+  togglePlayPause(true);
+  updateQueueHighlight();
+}
+
+function togglePlayPause(forcePlay = false) {
+  const audio = document.getElementById("audioPlayer");
+  const btn = document.querySelector(".play-pause-btn");
+  if (forcePlay || !isPlaying) {
+    audio.play();
+    btn.textContent = "⏸";
+    isPlaying = true;
+  } else {
+    audio.pause();
+    btn.textContent = "▶";
+    isPlaying = false;
+  }
+}
+
+function nextSong() {
+  loadSong(currentSongIndex + 1);
+}
+
+function prevSong() {
+  loadSong(currentSongIndex - 1);
+}
+
+function setProgress(e) {
+  const bar = document.querySelector(".progress-bar");
+  const audio = document.getElementById("audioPlayer");
+  const pct = e.offsetX / bar.offsetWidth;
+  audio.currentTime = pct * (audio.duration || 0);
+}
+
+function setVolume(val) {
+  document.getElementById("audioPlayer").volume = val;
+}
+
+setInterval(() => {
+  const audio = document.getElementById("audioPlayer");
+  if (!audio.duration) return;
+  const pct = (audio.currentTime / audio.duration) * 100;
+  document.getElementById("progress").style.width = pct + "%";
+  document.getElementById("current-time").textContent = fmtTime(audio.currentTime);
+  document.getElementById("total-time").textContent = fmtTime(audio.duration);
+}, 500);
+
+function fmtTime(s) {
+  const m = Math.floor(s / 60);
+  const sec = Math.floor(s % 60);
+  return `${m}:${sec < 10 ? "0" : ""}${sec}`;
+}
+
+function renderQueue() {
+  const ul = document.getElementById("song-queue");
+  ul.innerHTML = "";
+  songs.forEach((song, idx) => {
+    const li = document.createElement("li");
+    li.textContent = `${song.song_name} - ${song.singer}`;
+    li.onclick = () => loadSong(idx);
+    li.dataset.index = idx;
+    ul.appendChild(li);
+  });
+  updateQueueHighlight();
+}
+
+function updateQueueHighlight() {
+  [...document.querySelectorAll("#song-queue li")].forEach(li => {
+    li.classList.toggle("playing", Number(li.dataset.index) === currentSongIndex);
+  });
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+  filterSongs("Telugu");
+});
+
+function clearCurrentSong() {
+  document.getElementById("song-image").src = "";
+  document.getElementById("song-title").textContent = "";
+  document.getElementById("song-movie").textContent = "";
+  document.getElementById("song-source").src = "";
+  document.getElementById("audioPlayer").load();
+  isPlaying = false;
+  document.querySelector(".play-pause-btn").textContent = "▶";
+  document.getElementById("progress").style.width = "0%";
+  document.getElementById("current-time").textContent = "0:00";
+  document.getElementById("total-time").textContent = "0:00";
+}
+document.addEventListener("DOMContentLoaded", () => {
+  filterSongs("Telugu");
+});
+
+  </script>
+</body>
+</html>

@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Upload Song</title>
+    <style>
+        body { font-family: Arial, sans-serif; text-align: center; padding: 20px; }
+        form { max-width: 400px; margin: auto; padding: 20px; border: 1px solid #ddd; border-radius: 10px; }
+        input, button { width: 100%; padding: 10px; margin: 10px 0; }
+    </style>
+</head>
+<body>
+
+    <h2>Upload Song</h2>
+    
+    <form method="POST" enctype="multipart/form-data">
+        {% csrf_token %}
+        
+        <input type="text" name="song_name" placeholder="Song Name" required>
+        <input type="text" name="singer" placeholder="Singer Name" required>
+        <input type="text" name="movie" placeholder="Movie (Optional)">
+        <input type="text" name="language" placeholder="Language" required>
+        
+        <label>Upload Song:</label>
+        <input type="file" name="song_file" accept="audio/*" required>
+        
+        <label>Upload Image:</label>
+        <input type="file" name="image_file" accept="image/*" required>
+
+        <button type="submit">Upload</button>
+    </form>
+
+</body>
+</html>

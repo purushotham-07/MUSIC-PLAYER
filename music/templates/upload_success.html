@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Upload Successful</title>
+    <style>
+        body { font-family: Arial, sans-serif; text-align: center; padding: 20px; }
+    </style>
+</head>
+<body>
+
+    <h2>Upload Successful!</h2>
+    
+    <p><strong>Song URL:</strong> <a href="{{ song_url }}" target="_blank">Listen Here</a></p>
+    <p><strong>Image:</strong></p>
+    <img src="{{ image_url }}" alt="Song Image" width="200">
+
+    <br><br>
+    <a href="{% url 'upload_song' %}">Upload Another Song</a>
+
+</body>
+</html>
