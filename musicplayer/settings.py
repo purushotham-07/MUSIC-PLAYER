@@ -23,7 +23,8 @@ DEBUG = str_to_bool(os.getenv('DEBUG', 'True'))
 
 # Hosts allowed to access the application
 if DEBUG:
-    ALLOWED_HOSTS = []
+    ALLOWED_HOSTS = ['music-player-b2kz.onrender.com', '127.0.0.1', 'localhost']
+
 else:
     ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', '127.0.0.1,localhost').split(',')
 
